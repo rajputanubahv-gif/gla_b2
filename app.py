@@ -1,3 +1,4 @@
+import os
 from flask import Flask, redirect, render_template, request, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, logout_user
@@ -10,7 +11,13 @@ from model.users import User
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key_here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://rootlocalhost:3306/yo'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://rootlocalhost:3306/yo'
+
+db_url = os.environ.get("DATABASE_URL", "mysql+mysqlconnector://root:localhost:3306/yo")
+
+if db_url and db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 
 loginmanager = LoginManager()   
 loginmanager.init_app(app)
